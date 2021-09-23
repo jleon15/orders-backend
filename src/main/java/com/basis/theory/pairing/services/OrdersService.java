@@ -1,27 +1,30 @@
 package com.basis.theory.pairing.services;
 
 import com.basis.theory.pairing.models.*;
+import com.basis.theory.pairing.repositories.PizzaOrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersService implements IOrdersService {
 
+    @Autowired
+    private PizzaOrderRepository orderRepository;
+
+    @Transactional
     @Override
     public List<PizzaOrder> getPizzaOrders() {
-        // TODO get from database
-        return new ArrayList<>(Arrays.asList(generatePizza(), generatePizza(), generatePizza()));
-    }
-
-    private PizzaOrder generatePizza() {
-        Random random = new Random();
-
-        return new PizzaOrder(
-                random.nextInt(Integer.MAX_VALUE),
-                new Pizza(random.nextInt(), "Cheese", Collections.singletonList(new PizzaTopping(random.nextInt(), "More Cheese"))),
-                new PizzaCrust(random.nextInt(), "Stuffed crust"),
-                new PizzaSize(random.nextInt(), "Huge")
-        );
+        return this.orderRepository.findAll().stream().map(order ->
+                new PizzaOrder(
+                        order.getId(),
+                        order.getPizza().toModel(),
+                        order.getPizzaCrust().toModel(),
+                        order.getPizzaSize().toModel()
+                )
+        ).collect(Collectors.toList());
     }
 }
