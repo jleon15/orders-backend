@@ -22,7 +22,7 @@ public class OrdersController {
             @RequestParam Optional<Integer> pageNumber,
             @RequestParam Optional<Integer> pageSize
     ) {
-        int number = pageNumber.orElse(1);
+        int number = pageNumber.orElse(0);
         int size = pageSize.orElse(5);
 
         return ResponseEntity.ok(
