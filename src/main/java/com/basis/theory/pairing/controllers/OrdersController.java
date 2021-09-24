@@ -1,15 +1,13 @@
 package com.basis.theory.pairing.controllers;
 
-import com.basis.theory.pairing.models.PizzaOrder;
+import com.basis.theory.pairing.models.responses.PizzaOrderPage;
 import com.basis.theory.pairing.services.IOrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -20,8 +18,16 @@ public class OrdersController {
     private IOrdersService ordersService;
 
     @GetMapping(path = "/orders")
-    public ResponseEntity<List<PizzaOrder>> getOrders() {
-        return ResponseEntity.ok(this.ordersService.getPizzaOrders());
+    public ResponseEntity<PizzaOrderPage> getOrders(
+            @RequestParam Optional<Integer> pageNumber,
+            @RequestParam Optional<Integer> pageSize
+    ) {
+        int number = pageNumber.orElse(1);
+        int size = pageSize.orElse(5);
+
+        return ResponseEntity.ok(
+                this.ordersService.getPizzaOrders(PageRequest.of(number, size))
+        );
     }
 
 }

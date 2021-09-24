@@ -29,4 +29,13 @@ public class PizzaOrder {
     @JoinColumn(name = "size_id", referencedColumnName = "id")
     private PizzaSize pizzaSize;
 
+    public com.basis.theory.pairing.models.PizzaOrder toModel() {
+        return new com.basis.theory.pairing.models.PizzaOrder(
+                this.getId(),
+                this.getPizza().toModel(),
+                this.getPizzaCrust().toModel(),
+                this.getPizzaSize().toModel()
+        );
+    }
+
 }

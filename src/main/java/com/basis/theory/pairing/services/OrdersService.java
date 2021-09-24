@@ -1,8 +1,11 @@
 package com.basis.theory.pairing.services;
 
 import com.basis.theory.pairing.models.*;
+import com.basis.theory.pairing.models.responses.PizzaOrderPage;
 import com.basis.theory.pairing.repositories.PizzaOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,14 +20,19 @@ public class OrdersService implements IOrdersService {
 
     @Transactional
     @Override
-    public List<PizzaOrder> getPizzaOrders() {
-        return this.orderRepository.findAll().stream().map(order ->
-                new PizzaOrder(
-                        order.getId(),
-                        order.getPizza().toModel(),
-                        order.getPizzaCrust().toModel(),
-                        order.getPizzaSize().toModel()
-                )
+    public PizzaOrderPage getPizzaOrders(Pageable pageable) {
+        Page<com.basis.theory.pairing.entities.PizzaOrder> pageItems = this.orderRepository.findAll(pageable);
+        List<PizzaOrder> orders = pageItems.stream().map(order ->
+                order.toModel()
         ).collect(Collectors.toList());
+
+        return new PizzaOrderPage(
+                orders,
+                pageItems.getTotalPages(),
+                pageItems.getTotalElements(),
+                pageItems.getNumber(),
+                pageItems.isFirst(),
+                pageItems.isLast()
+        );
     }
 }
